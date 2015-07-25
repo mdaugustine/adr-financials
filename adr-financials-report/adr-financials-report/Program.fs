@@ -3,16 +3,28 @@
 open System.IO
 open System
 
-let filePath = "test.txt"
+let values =
+  "test.txt"
+  |> File.ReadAllLines
+  |> Array.mapi (fun i line -> line.Split([|'\t'|]))
 
-let readLines = seq {
-    use sr = new StreamReader (filePath)
-    while not sr.EndOfStream do
-        //for tab in sr.ReadLine().Split([|'\t'|]) do
-        yield sr.ReadLine().Split([|'\t'|])
-}
+let date = 
+  let month = Int32.Parse(values.[1].[1].Split([|'/'|]).[0]) - 1
+  let year = Int32.Parse(values.[1].[1].Split([|'/'|]).[2])
+  if month < 1 then (12, year - 1) else (month, year)
 
-readLines |> Seq.iter(fun x -> x |> Seq.iter(fun y -> printfn "%s" y))
+let sales = Decimal.Parse(values.[2].[7])
+let currency = values.[1].[8]
+let app = values.[1].[4]
+
+Console.WriteLine("month " + date.ToString())
+Console.WriteLine("sales " + sales.ToString())
+Console.WriteLine("currency " + currency)
+Console.WriteLine("game " + app)
+
+for i in values do
+  for j in i do
+     printfn "%s" j
 
 [<EntryPoint>]
 let main argv = 
