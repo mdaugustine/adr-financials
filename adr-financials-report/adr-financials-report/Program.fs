@@ -47,9 +47,10 @@ let sales =
             |> Seq.filter (fun elem -> not (Double.IsNaN (float(elem))))
             |> Seq.sum
         yield totalSales]
-    |> Seq.sum
 
-printfn "%f" sales
+for sale in sales do
+    printfn "%f" sale
+
 (*
 let salesReport = SalesReport.Load("test.txt")
 
