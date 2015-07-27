@@ -3,6 +3,7 @@
 open System.IO
 open System
 open FSharp.Data
+open System.Text.RegularExpressions
 
 (*
 let ParseFile = 
@@ -34,8 +35,22 @@ ParseFile
 let values = salesRecord.fromFile "test.txt"
 *)
 
+let dir = new DirectoryInfo(@"C:\Users\Mdaugustine\Documents\adr-financials\adr-sales")
 type SalesReport = CsvProvider<"test.txt", Separators="\t", IgnoreErrors=true>
 
+let sales = 
+    [for file in dir.GetFiles() do
+        let salesReport = SalesReport.Load(file.FullName)
+        let totalSales =
+            salesReport.Rows
+            |> Seq.map (fun row -> row.``Extended Partner Share``)
+            |> Seq.filter (fun elem -> not (Double.IsNaN (float(elem))))
+            |> Seq.sum
+        yield totalSales]
+    |> Seq.sum
+
+printfn "%f" sales
+(*
 let salesReport = SalesReport.Load("test.txt")
 
 let totalSales = 
@@ -44,7 +59,7 @@ let totalSales =
     |> Seq.sum
 
 printfn "%f" totalSales
-
+*)
 (*
 let values = 
     "test.txt"
